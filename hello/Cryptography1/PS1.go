@@ -6,11 +6,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	//"strconv"
 	"strings"
-	//"strings"
-	//"unicode/utf8"
-	//"crypto/cipher"
 )
 
 var cipherTexts = []string{
@@ -30,13 +26,16 @@ var cipherTexts = []string{
 var charset = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func main() {
-
-	final := make([]map[int]int, 11)
+	//11 ciphers
 	decodedCts := make([][]byte, 11)
-	for i := 0; i < len(final); i++ {
-		final[i] = make(map[int]int)
+	//var err = error
+	for i := 0; i < len(cipherTexts); i++ {
 		//decode cipher text to ascii
-		decodedCts[i], _ = hex.DecodeString(cipherTexts[i][:166])
+		decoded, err := hex.DecodeString(cipherTexts[i][:166])
+		decodedCts[i] = decoded
+		if err != nil {
+			fmt.Printf("Error:%v during decoding %s", err, decodedCts[i])
+		}
 	}
 	cipherKey := make([]int, 83)
 	for i := 0; i < 83; i++ {
@@ -44,7 +43,6 @@ func main() {
 		col := make(map[int]int)
 		for j := 0; j <= 255; j++ {
 			for ct := 0; ct < 11; ct++ {
-
 				res := decodedCts[ct][i] ^ byte(j)
 				//convert to string
 				str := string(res)
@@ -69,11 +67,8 @@ func main() {
 		}
 		cipherKey[i] = colKey
 	}
-
 	//fmt.Println(cipherKey)
-
 	for col := 0; col < 83; col++ {
 		fmt.Print(string(decodedCts[10][col] ^ byte(cipherKey[col])))
 	}
-
 }
